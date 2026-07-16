@@ -1,0 +1,173 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PoolOps first-run plan</title><style>*{box-sizing:border-box}body{margin:0;padding:14px;background:#0f1115;color:#e8eaed;
+font:16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-text-size-adjust:100%}
+h1{font-size:25px;margin:.2em 0;color:#fff;letter-spacing:-.5px}
+h2{font-size:20px;margin:1.4em 0 .4em;color:#4ade80;border-top:1px solid #2a2f3a;padding-top:.7em}
+h3{font-size:17px;margin:1.2em 0 .3em;color:#facc15}
+h4{font-size:16px;margin:.1em 0 .5em;color:#fff}
+p{margin:.5em 0}b{color:#fff}hr{border:0;border-top:1px solid #2a2f3a;margin:1.2em 0}
+small{color:#9aa4b2;font-size:12.5px;font-weight:400;line-height:1.35;display:inline-block;margin-top:2px}
+table{width:100%;border-collapse:collapse;margin:.7em 0;font-size:14px;display:block;overflow-x:auto}
+th{background:#1c2029;color:#9aa4b2;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+th,td{border:1px solid #2a2f3a;padding:8px 7px;vertical-align:top}
+tbody tr:nth-child(even) td{background:#151922}
+blockquote{margin:.8em 0;padding:11px 13px;background:#1a1f2b;border-left:3px solid #4ade80;border-radius:5px;font-size:15px}
+blockquote h4{margin:0 0 .5em;color:#4ade80;font-size:15px}
+blockquote p{margin:.45em 0}
+blockquote ol{margin:.3em 0;padding-left:1.3em}
+ul,ol{margin:.5em 0;padding-left:1.4em}li{margin:.35em 0}
+code{background:#252a35;padding:1px 5px;border-radius:3px;font-size:13px;color:#facc15}
+a.tel{color:#4ade80;font-weight:700;text-decoration:none;font-size:16px;white-space:nowrap}
+a{color:#60a5fa}</style></head><body><h1 id="poolops-first-run-onboarding-study">PoolOps First-Run Onboarding Study</h1>
+<p><b>Task t36 · 2026-07-16 · Miles background worker (Opus)</b><br>Scope: research engaging B2B onboarding, map to PoolOps mailer + AI receptionist, recommend a first-run sequence Brandon can approve or edit.</p>
+<hr>
+<h2 id="1-sms-ready-one-pager-read-this-part-only-if-you-read-nothing-else">1. SMS-Ready One-Pager (read this part only if you read nothing else)</h2>
+<p>**Recommendation: do NOT build a symmetric &quot;choose your path&quot; flow. Mail is the only activation track that can finish in the first session. Receptionist cannot — it needs an admin CLI run today. Ship mail-to-proof; make receptionist a <i>started, not finished</i> promise.**</p>
+<p><b>The three facts that decide this:</b></p>
+<ol>
+<li><b>Mail is one step from activation.</b> <code>/get-started</code> already does company → service area → Lob-verified return address (<code>components/GetStartedWizard.tsx:9</code>). It ends on a <i>saved form</i>, not a <i>proof</i>. The owner never sees a thing that looks like mail. <b>The whole gap is one screen: show them their postcard.</b></li>
+<li><b>Receptionist is not self-serve at all.</b> There is no provisioning API route. It runs through <code>scripts/onboard-tenant.mjs</code> — a white-glove CLI Brandon runs by hand, which prints a &quot;Twilio TFV submission checklist&quot; (<code>scripts/onboard-tenant.mjs:1-33</code>). No self-serve path exists to build on.</li>
+<li><b>The receptionist clock is regulatory, not engineering.</b> Toll-free verification gates <b>SMS only — not voice</b> (<a href="https://www.twilio.com/docs/messaging/compliance/toll-free/console-onboarding">Twilio docs</a>). Twilio publishes <b>no approval SLA</b>. PoolOps already models this: <code>sms_provider=&#x27;manual-onetap&#x27;</code> is set &quot;legally safe until their TFV/A2P clears&quot; (<code>scripts/onboard-tenant.mjs:20</code>). <b>You cannot promise &quot;receptionist live today&quot; no matter what you build.</b></li>
+</ol>
+<p><b>What this means:</b> the two tracks are not peers. Track A ends in a dopamine hit in ~5 minutes. Track B ends in &quot;we&#x27;re on it, check back.&quot; A choose-your-path screen that offers both as equals sets up half your first users to hit a dead end on day one — the exact opposite of activation.</p>
+<p><b>Recommended shape — one shell, one track, one deferred promise:</b></p>
+<blockquote>
+<p>Signup → <b>company → area → address</b> (exists today) → <b>NEW: &quot;Here&#x27;s your postcard&quot; proof screen</b> → cockpit with a 3-item checklist where &quot;Turn on your AI receptionist&quot; is item 3 and opens a <i>request</i> form, not a wizard.</p>
+</blockquote>
+<p><b>What Brandon decides next — pick one:</b></p>
+<ul>
+<li><b>(A) Ship-now, ~1 screen of work:</b> add the postcard proof screen at the end of <code>/get-started</code>. Uses the existing Lob preview capability. This is the highest value-per-hour move in this doc.</li>
+<li><b>(B) Ship-now+, ~1 screen + 1 form:</b> A, plus a &quot;Request my receptionist number&quot; form that queues to Brandon&#x27;s batch instead of pretending to provision. Honest, and it starts the TFV clock on day one.</li>
+<li><b>(C) Build:</b> make receptionist genuinely self-serve (provisioning API + number search UI + TFV form). Multi-day. <b>Not recommended before customer #1.</b></li>
+</ul>
+<p><b>My call: (B).</b> It&#x27;s roughly a day, it makes the mail track <i>feel</i> real, and it converts the receptionist from a broken promise into a scheduled one.</p>
+<hr>
+<h2 id="2-reference-teardowns-58-b2b-ops-products">2. Reference Teardowns (5–8 B2B ops products)</h2>
+<p>Selected for fit with PoolOps: B2B, ops-critical, physical-world side effects, owner-operator buyers. Consumer growth-loop patterns deliberately excluded.</p>
+<table><thead><tr><th>#</th><th>Product</th><th>First 60 seconds</th><th>First session</th><th>Activation moment</th><th>Transferable to PoolOps</th></tr></thead><tbody>
+<tr><td>1</td><td><b>Lob</b> (direct mail API)</td><td>Test vs. live environment split; test keys work instantly</td><td>Send a mailpiece in test env and <b>view a digital proof</b> without anything printing (<a href="https://docs.lob.com/">Lob docs</a>)</td><td>Seeing a rendered proof of <i>your</i> mailpiece</td><td><b>Direct.</b> PoolOps already uses Lob (<code>lib/lob-return-address-verify.ts:28</code>). The proof <i>is</i> the aha.</td></tr>
+<tr><td>2</td><td><b>PostGrid</b> (direct mail API)</td><td>Two keys issued at signup (test + live), isolated sandbox</td><td>Create an order in test mode; <b>PDF preview generated within seconds</b>, accessible via <code>url</code> on the returned object (<a href="https://docs.postgrid.com/">PostGrid docs</a>)</td><td>The PDF preview of the actual piece</td><td>Confirms preview-before-send is the category-standard aha, not a nice-to-have</td></tr>
+<tr><td>3</td><td><b>Intercom Fin</b> (AI agent)</td><td>Connect knowledge sources; import ~10 min (up to 10 hrs) (<a href="https://www.intercom.com/help/en/articles/9440354-knowledge-sources-to-power-ai-agents-and-self-serve-support">Intercom</a>)</td><td><b>Teammate preview</b> — talk to your agent before customers can (<a href="https://www.intercom.com/help/en/articles/7837527-test-fin-ai-agent-before-rolling-it-out-to-customers">Intercom</a>); batch-test against real past conversations (<a href="https://www.intercom.com/help/en/articles/10521711-batch-test-fin-ai-agent">Intercom</a>)</td><td>Watching <i>your</i> agent answer a real question correctly</td><td><b>Direct.</b> Solves the receptionist trust problem <i>without a phone number.</i> See §4.</td></tr>
+<tr><td>4</td><td><b>Intercom Fin — staged rollout</b></td><td>—</td><td>Roll out by customer segment, &quot;supervise Fin closely and feel confident&quot; before full exposure (<a href="https://www.intercom.com/help/en/articles/7837527-test-fin-ai-agent-before-rolling-it-out-to-customers">Intercom</a>)</td><td>Surviving a limited live cohort</td><td>Pool owners will not hand their phone to an AI blind. Staged &gt; big-bang.</td></tr>
+<tr><td>5</td><td><b>Stripe</b></td><td>Test mode keys work with zero KYC</td><td>Take a <b>test payment</b> immediately; real bank/identity data deferred until activation</td><td>First successful test charge</td><td>Deferred-KYC = deferred-TFV. Let value happen <i>before</i> the compliance gate.</td></tr>
+<tr><td>6</td><td><b>Twilio</b></td><td>Buy a number, &quot;first SMS in console&quot; quickstart</td><td>Console-driven first call/SMS; TFV runs <b>async</b> in the background</td><td>First message sent from your own number</td><td>The provisioning UX to copy <i>if</i> Brandon ever builds track B self-serve</td></tr>
+<tr><td>7</td><td><b>Linear</b></td><td>Keyboard-first, minimal setup, no tour</td><td>Workspace exists in seconds; you&#x27;re creating issues, not configuring</td><td>First issue created</td><td>Anti-pattern warning: PoolOps owners are <i>not</i> Linear users. Don&#x27;t cargo-cult zero-guidance.</td></tr>
+<tr><td>8</td><td><b>Superhuman</b></td><td>Split/progressive onboarding — high-touch, one concept at a time</td><td>Setup deliberately spread across sessions rather than front-loaded</td><td>Habit forming over days, not one moment</td><td>Justifies deferring receptionist to session 2+ rather than cramming first-run</td></tr>
+</tbody></table>
+<p><b>Honest limits:</b> OpenPhone and Podium/Front owner-operator onboarding are not well documented publicly — I found no citable teardown and did not want to guess, so they&#x27;re excluded rather than invented. Perplexity research was unavailable (API quota exhausted — no spend authorized), so this table is built from vendor documentation and the codebase rather than paid teardown archives.</p>
+<hr>
+<h2 id="3-reusable-pattern-card">3. Reusable Pattern Card</h2>
+<table><thead><tr><th>Pattern</th><th>Rule</th><th>Evidence</th><th>PoolOps status</th></tr></thead><tbody>
+<tr><td><b>Time-to-first-value</b></td><td>Remove every step between signup and a real outcome</td><td>Lob/PostGrid/Stripe all ship test-mode value before compliance</td><td>⚠️ Wizard ends on a saved form, not an outcome</td></tr>
+<tr><td><b>Proof of live system</b></td><td>The aha is a <b>rendered artifact</b>, not a success toast</td><td>PostGrid PDF preview; Lob digital proof; Fin teammate preview</td><td>❌ Missing — biggest single gap</td></tr>
+<tr><td><b>Sandbox before live</b></td><td>Let them try it where mistakes are free</td><td>Test keys (Lob, PostGrid, Stripe, Twilio)</td><td>⚠️ Lob test mode available; not surfaced in onboarding</td></tr>
+<tr><td><b>Progressive disclosure</b></td><td>One concept per screen; defer advanced setup</td><td>Superhuman split onboarding; Fin staged rollout</td><td>✅ Wizard already does this well (3 steps, ~30s each)</td></tr>
+<tr><td><b>Skip / do-later</b></td><td>Never trap; but gate on <i>proofs</i>, not clicks</td><td>Stripe deferred KYC</td><td>✅ Good: <code>nextSetupStep()</code> is proof-driven and refuses to report <code>done</code> without a completion stamp (<code>lib/tenant-onboarding.ts:60-70</code>)</td></tr>
+<tr><td><b>Empty states as onboarding</b></td><td>Empty screen = a job to do, not a dead end</td><td>Standard B2B SaaS</td><td>❓ Unverified — cockpit empty states not audited this run</td></tr>
+<tr><td><b>Owner-on-a-phone</b></td><td>Pool owners onboard from a truck, one thumb, bad signal</td><td>Field-service reality</td><td>❓ Wizard is short (good sign) but mobile rendering not verified this run</td></tr>
+<tr><td><b>Don&#x27;t promise what compliance won&#x27;t deliver</b></td><td>Async gates get honest ETAs, not spinners</td><td>Twilio publishes no TFV SLA</td><td>❌ Risk if receptionist is offered as a first-run peer to mail</td></tr>
+</tbody></table>
+<hr>
+<h2 id="4-mapping-to-poolops--the-two-tracks-are-not-symmetric">4. Mapping to PoolOps — the two tracks are not symmetric</h2>
+<h3 id="track-a--marketing-mail-live--90-built">Track A — Marketing mail live · <b>~90% built</b></h3>
+<p><b>What exists (verified):</b></p>
+<ul>
+<li>Wizard: company → area → address, <code>Step = &#x27;company&#x27; | &#x27;area&#x27; | &#x27;address&#x27; | &#x27;done&#x27;</code> (<code>components/GetStartedWizard.tsx:9,37</code>)</li>
+<li>Copy is already good and human: <i>&quot;Where should mail come from?&quot;</i>, <i>&quot;Towns or zip areas you cover — so we know your market when you scan.&quot;</i> (<code>components/GetStartedWizard.tsx:223-229</code>)</li>
+<li>Lob return-address verification wired in (<code>app/api/onboarding/first-run/route.ts</code>, <code>lib/lob-return-address-verify.ts</code>)</li>
+<li>Undeliverable addresses correctly block completion (<code>lib/tenant-onboarding.ts:82-95</code>)</li>
+<li>Postcard send, templates, preview, scheduling, credits all real (<code>app/api/pool-scans/[id]/postcards</code>, <code>/preview</code>, <code>app/api/mail-schedules</code>, <code>app/api/mail-credits</code>)</li>
+</ul>
+<p><b>⚠️ Model correction — this is not &quot;address book → campaign → send.&quot;</b> PoolOps mail is <b>pool-scan-anchored</b>: you scan an area/job, and postcards target prospects near it (<code>app/api/pool-scans/[id]/postcards</code>, <code>/mail-blitz</code>). Segmentation is <code>segment_query</code> against existing data. <b>There is no standalone contact-import UI.</b> Designing an address-book-first onboarding would mean building a product that doesn&#x27;t exist. The task brief assumed &quot;address book → campaign → first piece&quot;; the codebase says otherwise, and the codebase wins.</p>
+<p><b>The one real gap:</b> the wizard&#x27;s last screen is a form submission. The owner has <i>never seen a postcard</i>. Every reference product in §2 ends first-run on a rendered artifact.</p>
+<h3 id="track-b--ai-receptionist-live--not-self-serve-regulatory-clock">Track B — AI receptionist live · <b>not self-serve; regulatory clock</b></h3>
+<p><b>What exists (verified):</b></p>
+<ul>
+<li>Twilio provisioning: <code>lib/twilio-provision-core.js</code> (raw REST, has dry-run SIDs) — called only by <code>scripts/onboard-tenant.mjs</code> and <code>lib/twilio-provision.ts</code></li>
+<li>Per-tenant &quot;brain&quot; (system prompt), GET/POST versioned (<code>app/api/cockpit/receptionist/brain/route.ts:2-3</code>) — schema notes a new tenant is &quot;config, not a code change&quot;</li>
+<li>Voice/SMS/transcription/recording/voicemail all real (<code>app/api/twilio/voice-inbound</code>, <code>app/api/calls/*</code>)</li>
+<li>Guardrail tests treat it as production-critical (<code>package.json:59</code>)</li>
+</ul>
+<p><b>What does NOT exist (I checked — an earlier automated scan claimed these and was wrong):</b></p>
+<ul>
+<li>❌ No <code>app/api/cockpit/receptionist/preview</code> route</li>
+<li>❌ No <code>app/api/cockpit/receptionist/autobuild</code> route</li>
+<li>❌ No provisioning API route anywhere under <code>app/api</code> (<code>find app/api -ipath &quot;<i>provision</i>&quot; -o -ipath &quot;<i>number</i>&quot;</code> → empty)</li>
+<li>❌ No owner-facing receptionist page — only <code>app/admin/receptionist/page.tsx</code> (admin, not tenant)</li>
+<li>❌ Zero mentions of &quot;receptionist&quot; anywhere in <code>app/get-started</code>, <code>app/signup</code>, <code>app/api/onboarding</code>, or the wizard</li>
+</ul>
+<p><b>Actual path today:</b> owner signs up → Brandon runs <code>scripts/onboard-tenant.mjs</code> by hand → submits Twilio TFV → waits. <b>This is white-glove by design</b> (&quot;Founding 5 era&quot;, <code>scripts/onboard-tenant.mjs:3</code>).</p>
+<p><b>The compliance nuance that creates an opportunity:</b> TFV gates <b>SMS to US/Canada</b>, and the docs do <b>not</b> state that voice is restricted (<a href="https://www.twilio.com/docs/messaging/compliance/toll-free/console-onboarding">Twilio</a>). So <i>answering calls</i> is plausibly not TFV-blocked — only <i>texting back</i> is, which is exactly why PoolOps ships <code>sms_provider=&#x27;manual-onetap&#x27;</code> as the legally-safe interim. <b>⚠️ Verify with Twilio before promising this in copy — I could not find an explicit &quot;voice is unrestricted&quot; statement, and inferring permission from silence in a compliance doc is how people get numbers blocked.</b></p>
+<p><b>Highest-leverage receptionist idea (borrowed from Fin, costs no phone number):</b> let the owner <b>chat with their receptionist brain in-app before any number exists.</b> The brain is already GET/POST-able per tenant. That converts a multi-day regulatory wait into a first-session aha — they <i>hear</i> their receptionist before they own a number. This is the one receptionist feature worth building early, and it&#x27;s a text box, not a telecom integration. (Flagged as <b>gap vs. ship-now</b> — it&#x27;s real work, just unusually cheap work.)</p>
+<hr>
+<h2 id="5-recommended-first-run-wireframe-plain-english-screen-by-screen">5. Recommended First-Run Wireframe (plain English, screen by screen)</h2>
+<p><b>Shell:</b> keep the existing <code>/get-started</code> rail and its step-chip header. <b>No choose-your-path screen</b> — one spine, receptionist enters as a checklist item after the win.</p>
+<h3 id="screen-1--company-exists-keep-as-is">Screen 1 — Company <i>(exists, keep as-is)</i></h3>
+<ul>
+<li>H1: &quot;Welcome, {FirstName}.&quot; · Sub: &quot;Confirm the company details for your workspace — about 30 seconds.&quot;</li>
+<li>Fields: business name, phone. Server skips this when signup prefilled it (<code>components/GetStartedWizard.tsx:87-90</code>) — good, keep.</li>
+<li><b>Success:</b> name + phone saved.</li>
+</ul>
+<h3 id="screen-2--service-area-exists-keep-as-is">Screen 2 — Service area <i>(exists, keep as-is)</i></h3>
+<ul>
+<li>H1: &quot;Where do you work?&quot; · Sub: &quot;Towns or zip areas you cover — so we know your market when you scan.&quot;</li>
+<li><b>Success:</b> <code>serviceArea</code> non-empty.</li>
+</ul>
+<h3 id="screen-3--return-address-exists-keep--but-change-the-button">Screen 3 — Return address <i>(exists, keep — but change the button)</i></h3>
+<ul>
+<li>H1: &quot;Where should mail come from?&quot;</li>
+<li>Lob verifies deliverability; undeliverable = cannot complete (correct, keep).</li>
+<li><b>Change:</b> button text from a generic finish → <b>&quot;See my postcard →&quot;</b>. Sets the expectation that a <i>thing</i> is coming.</li>
+<li><b>Success:</b> <code>returnAddressComplete === true</code> + completion stamp.</li>
+</ul>
+<h3 id="screen-4--new-heres-your-postcard--the-activation-moment">Screen 4 — <b>NEW: &quot;Here&#x27;s your postcard.&quot;</b> ← <i>the activation moment</i></h3>
+<ul>
+<li>H1: &quot;Here&#x27;s your postcard.&quot; · Sub: &quot;This is what lands in a mailbox near your next job. Nothing has been sent.&quot;</li>
+<li><b>Body:</b> rendered postcard preview — their business name, their return address, a default template. Reuse the existing preview path (<code>app/api/pool-scans/[id]/postcards/preview</code>, <code>app/api/postcard-templates</code>).</li>
+<li><b>Explicit safety copy:</b> &quot;Nothing has been sent&quot; — mirrors Lob/PostGrid test-mode norms. Owners fear accidentally mailing 500 postcards; say the quiet part.</li>
+<li><b>Primary CTA:</b> &quot;Scan an area to send these →&quot; (into the real pool-scan flow — the actual product spine)</li>
+<li><b>Secondary:</b> &quot;I&#x27;ll do this later&quot; → cockpit. Never trap.</li>
+<li><b>Success criterion:</b> owner sees a rendered artifact bearing their own business name. <b>This is the aha. Instrument it.</b></li>
+<li><b>Gap flag:</b> needs a preview callable with <i>no pool scan yet</i> (today&#x27;s preview hangs off <code>pool-scans/[id]</code>). Either seed a demo scan for the tenant&#x27;s service area or add a template-only preview. <b>This is the one piece of build work in the ship-now path — scope it before committing.</b></li>
+</ul>
+<h3 id="screen-5--cockpit-with-a-3-item-checklist-pattern-37-items-value-ordered">Screen 5 — Cockpit with a 3-item checklist <i>(pattern: 3–7 items, value-ordered)</i></h3>
+<ol>
+<li>✅ <b>Your mail identity is ready</b> — done, shown checked (progress-from-the-start; borrowed from standard checklist practice)</li>
+<li>⬜ <b>Send your first postcards</b> — → pool scan flow</li>
+<li>⬜ <b>Turn on your AI receptionist</b> — → Screen 6</li>
+</ol>
+<h3 id="screen-6--receptionist-a-request-not-a-wizard-honest-track-b">Screen 6 — Receptionist: a <i>request</i>, not a wizard <b>(honest track B)</b></h3>
+<ul>
+<li>H1: &quot;Get a number that answers when you&#x27;re in a pool.&quot;</li>
+<li>Body — say the real timeline: &quot;We set your number up for you and submit the carrier paperwork. Texting needs carrier approval, which takes a few days and isn&#x27;t something we control. We&#x27;ll tell you the moment it clears.&quot;</li>
+<li><b>Do NOT</b> show a fake number-search UI. There is no provisioning API; a UI that implies self-serve is a lie the backend can&#x27;t cash.</li>
+<li><b>Action:</b> form (business name, desired area code, current number to forward) → <b>queues to <code>~/shared-brain/batch-queue/</code>, not to Twilio.</b> Brandon runs <code>scripts/onboard-tenant.mjs</code>. This is white-glove, correctly labeled.</li>
+<li><b>Success:</b> request queued + honest ETA shown.</li>
+<li><b>Stretch (the Fin move):</b> &quot;Hear your receptionist now&quot; → chat with the tenant brain via the existing <code>brain</code> route. Aha with zero telecom.</li>
+</ul>
+<hr>
+<h2 id="6-gaps-vs-ship-now">6. Gaps vs. Ship-Now</h2>
+<table><thead><tr><th>Item</th><th>Verdict</th><th>Notes</th></tr></thead><tbody>
+<tr><td>Postcard proof screen (Screen 4)</td><td><b>SHIP-NOW</b></td><td>Highest value. Needs scan-less preview — scope first</td></tr>
+<tr><td>&quot;See my postcard →&quot; button copy</td><td><b>SHIP-NOW</b></td><td>Minutes</td></tr>
+<tr><td>Cockpit 3-item checklist</td><td><b>SHIP-NOW</b></td><td>Small</td></tr>
+<tr><td>Receptionist request form → batch-queue</td><td><b>SHIP-NOW</b></td><td>~1 form, honest</td></tr>
+<tr><td>Chat-with-your-brain preview</td><td><b>GAP (cheap)</b></td><td>Best receptionist idea; brain route already exists</td></tr>
+<tr><td>Self-serve number provisioning + TFV form</td><td><b>GAP (multi-day)</b></td><td>Not before customer #1</td></tr>
+<tr><td>Contact/address-book import UI</td><td><b>GAP — and possibly wrong</b></td><td>Product is scan-anchored; don&#x27;t build an address book to satisfy an onboarding metaphor</td></tr>
+<tr><td>Mobile audit of wizard</td><td><b>UNVERIFIED</b></td><td>Owners onboard from a truck. Worth 20 min</td></tr>
+<tr><td>Cockpit empty states</td><td><b>UNVERIFIED</b></td><td>Not audited this run</td></tr>
+<tr><td>&quot;Voice isn&#x27;t TFV-gated&quot;</td><td><b>VERIFY WITH TWILIO</b></td><td>Inferred from silence; do not put in customer copy yet</td></tr>
+</tbody></table>
+<hr>
+<h2 id="7-sources">7. Sources</h2>
+<ul>
+<li><a href="https://docs.lob.com/">Lob API documentation</a> · <a href="https://www.lob.com/">Lob</a> — test environment, digital proofs</li>
+<li><a href="https://docs.postgrid.com/">PostGrid docs</a> · <a href="https://postgrid.readme.io/page/faqs">PostGrid FAQs</a> — test/live keys, PDF previews, CASS</li>
+<li><a href="https://www.intercom.com/help/en/articles/7837527-test-fin-ai-agent-before-rolling-it-out-to-customers">Intercom — Test Fin before rolling out</a> — teammate preview, staged rollout</li>
+<li><a href="https://www.intercom.com/help/en/articles/10521711-batch-test-fin-ai-agent">Intercom — Batch test Fin</a></li>
+<li><a href="https://www.intercom.com/help/en/articles/9440354-knowledge-sources-to-power-ai-agents-and-self-serve-support">Intercom — Knowledge sources</a> — import timing</li>
+<li><a href="https://www.twilio.com/docs/messaging/compliance/toll-free/console-onboarding">Twilio — Toll-free verification console onboarding</a> — statuses, SMS restriction, no published SLA</li>
+<li><a href="https://www.twilio.com/docs/messaging/compliance/toll-free/api-onboarding">Twilio — Toll-free verification API onboarding</a></li>
+<li>Local: <code>~/.claude/skills/onboarding-cro/SKILL.md</code> — checklist/empty-state/activation principles</li>
+</ul>
+<p><b>Codebase evidence:</b> <code>/Users/brandonbot/projects/workbench/poolops</code> — <code>components/GetStartedWizard.tsx:9,37,87-90,221-229</code>; <code>lib/tenant-onboarding.ts:1-8,26,60-70,82-95</code>; <code>app/api/onboarding/first-run/route.ts</code>; <code>scripts/onboard-tenant.mjs:1-33</code>; <code>lib/twilio-provision-core.js:67,191</code>; <code>app/api/cockpit/receptionist/brain/route.ts:2-3</code>; <code>package.json:59</code>.</p></body></html>

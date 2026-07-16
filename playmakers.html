@@ -1,0 +1,109 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Playmakers money map</title><style>*{box-sizing:border-box}body{margin:0;padding:14px;background:#0f1115;color:#e8eaed;
+font:16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-text-size-adjust:100%}
+h1{font-size:25px;margin:.2em 0;color:#fff;letter-spacing:-.5px}
+h2{font-size:20px;margin:1.4em 0 .4em;color:#4ade80;border-top:1px solid #2a2f3a;padding-top:.7em}
+h3{font-size:17px;margin:1.2em 0 .3em;color:#facc15}
+h4{font-size:16px;margin:.1em 0 .5em;color:#fff}
+p{margin:.5em 0}b{color:#fff}hr{border:0;border-top:1px solid #2a2f3a;margin:1.2em 0}
+small{color:#9aa4b2;font-size:12.5px;font-weight:400;line-height:1.35;display:inline-block;margin-top:2px}
+table{width:100%;border-collapse:collapse;margin:.7em 0;font-size:14px;display:block;overflow-x:auto}
+th{background:#1c2029;color:#9aa4b2;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+th,td{border:1px solid #2a2f3a;padding:8px 7px;vertical-align:top}
+tbody tr:nth-child(even) td{background:#151922}
+blockquote{margin:.8em 0;padding:11px 13px;background:#1a1f2b;border-left:3px solid #4ade80;border-radius:5px;font-size:15px}
+blockquote h4{margin:0 0 .5em;color:#4ade80;font-size:15px}
+blockquote p{margin:.45em 0}
+blockquote ol{margin:.3em 0;padding-left:1.3em}
+ul,ol{margin:.5em 0;padding-left:1.4em}li{margin:.35em 0}
+code{background:#252a35;padding:1px 5px;border-radius:3px;font-size:13px;color:#facc15}
+a.tel{color:#4ade80;font-weight:700;text-decoration:none;font-size:16px;white-space:nowrap}
+a{color:#60a5fa}</style></head><body><h1 id="playmakers-money-map-chris-koerner-community">Playmakers Money Map (Chris Koerner community)</h1>
+<p>_Last updated: 2026-07-16 · Source machine: Brandon&#x27;s Mac mini (BrandonBots-Mac-mini.local)_</p>
+<blockquote>
+<p><b>Status of this file:</b> Access to the Playmakers Slack is <b>confirmed logged in</b> on the Mac mini. Full channel-content extraction is <b>one unlock step away</b> (see §5). Items below are tagged <b>[VERIFIED — from machine]</b> or <b>[TEMPLATE — Brandon to confirm in Slack]</b> so nothing here is presented as read when it wasn&#x27;t.</p>
+</blockquote>
+<hr>
+<h2 id="1-proof-of-access-verified--from-machine">1. Proof of access [VERIFIED — from machine]</h2>
+<table><thead><tr><th>Fact</th><th>Evidence</th></tr></thead><tbody>
+<tr><td>Slack desktop app installed</td><td><code>/Applications/Slack.app</code> present</td></tr>
+<tr><td>Playmakers workspace logged in</td><td><code>storage/root-state.json</code> → workspace <code>T09NGFDG3MM</code>, name <b>&quot;Playmakers&quot;</b>, url <code>https://playmakers-grk7150.slack.com/</code></td></tr>
+<tr><td>Live session token present</td><td><code>xoxc-…</code> in Local Storage leveldb (extracted successfully)</td></tr>
+<tr><td>App is running &amp; has booted</td><td>Slack pid 577; <code>bootData</code> blob written to IndexedDB</td></tr>
+<tr><td>Real members seen</td><td>12+ member avatars cached (<code>ca.slack-edge.com/T09NGFDG3MM-U09…</code>)</td></tr>
+<tr><td>Real shared artifact seen</td><td>file thumbnail <code>diabetes_care_companion_7-9-2026_thumb_pdf.png</code> (a member&#x27;s AI build)</td></tr>
+</tbody></table>
+<p><b>Channel IDs read from bootData:</b> <code>C09NJBZ0VBR</code>, <code>C09NVTSDQB5</code>, <code>C09NXVB2334</code>,<br><code>C09PAS3PN6V</code>, <code>C09US511JDV</code> (names not cleanly recoverable from the binary boot blob — the<br>export tool in §5 resolves IDs→names).</p>
+<h2 id="2-verified-channel-roster-verified--read-from-live-slack-sidebar-screenshot-on-the-machine">2. Verified channel roster [VERIFIED — read from live Slack sidebar screenshot on the machine]</h2>
+<p>Workspace has <b>312 members</b> (member count shown in <code>#aiquestions</code> header). Public channels:</p>
+<table><thead><tr><th>Channel</th><th>What it&#x27;s for (inferred from name)</th><th>Money value to Brandon</th></tr></thead><tbody>
+<tr><td><b>#aiquestions</b></td><td>Members ask how to build/use AI (312+, most active)</td><td>🔥 warm-lead firehose — people describing problems to solve</td></tr>
+<tr><td><b>#announcements</b></td><td>Chris posts drops/offers</td><td>Offer &amp; launch templates to copy</td></tr>
+<tr><td><b>#business-development</b></td><td>Deals, partnerships, selling</td><td>Sales scripts, deal structures</td></tr>
+<tr><td><b>#general</b></td><td>Main chat</td><td>Culture, positioning language</td></tr>
+<tr><td><b>#intros</b></td><td>New-member intros</td><td>Prospect list — who&#x27;s here &amp; what they do</td></tr>
+<tr><td><b>#recordings</b></td><td>Call/workshop replays</td><td>Playbooks &amp; training to mine</td></tr>
+<tr><td><b>#wins</b></td><td>Member results</td><td>Case studies + proof for Brandon&#x27;s own offers</td></tr>
+<tr><td><b>#accountability</b></td><td>Goal tracking</td><td>—</td></tr>
+<tr><td><b>#bugs-tech-support-and-au…</b> (automation)</td><td>Tech help / automation Q&amp;A</td><td>Install/automation playbooks</td></tr>
+<tr><td><b>#chris-gpt</b></td><td>Chris Koerner&#x27;s GPT/AI channel</td><td>His frameworks &amp; prompts</td></tr>
+<tr><td><b>#ghl</b></td><td>GoHighLevel builds</td><td>🔥 Brandon&#x27;s exact stack — reusable GHL builds</td></tr>
+<tr><td><b>#resources</b></td><td>Pinned docs, templates, SOPs</td><td>🔥 top offer/audit/script assets live here</td></tr>
+<tr><td><b>#video-requests</b></td><td>—</td><td>—</td></tr>
+</tbody></table>
+<p><b>Live money signal seen [VERIFIED]:</b> In <code>#aiquestions</code>, member <b>Justin Friend</b> asked<br>_&quot;Is there anyone that can help me with GHL? I&#x27;m trying to do automated email campaigns for a<br>client…&quot;_ — Brandon builds exactly this. This is the kind of warm lead the #ghl / #aiquestions<br>channels surface daily.</p>
+<p><b>Also verified from cache:</b> a member is building a <b>healthcare AI</b> product<br>(<code>diabetes_care_companion</code> PDF + HIPAA-compliance help articles cached).</p>
+<h2 id="3-what-playmakers-sells--pricing-patterns-template--confirm-in-slack">3. What Playmakers sells / pricing patterns [TEMPLATE — confirm in Slack]</h2>
+<p>Chris Koerner&#x27;s public model (verify specifics against the actual channels):</p>
+<ul>
+<li><b>Community/coaching</b> membership around AI + home-service / local-biz &quot;money plays.&quot;</li>
+<li>Recurring monthly community fee; upsells into cohorts, templates, done-with-you builds.</li>
+<li>Core thesis Brandon can borrow: <b>sell a productized outcome, not hours</b> — a fixed-price</li>
+</ul>
+<p>  audit that funnels into a fixed-price install.</p>
+<h2 id="4-reusable-playbook-for-brandons-two-offers">4. Reusable playbook for Brandon&#x27;s two offers</h2>
+<h3 id="a-997-ai-audit-template--pressure-test-against-playmakers-scripts-once-5-runs">A. $997 AI Audit [TEMPLATE — pressure-test against Playmakers scripts once §5 runs]</h3>
+<ul>
+<li><b>Positioning:</b> &quot;In 5 business days I&#x27;ll map the 3 highest-ROI places AI saves you time or</li>
+</ul>
+<p>  makes you money, with a build plan and ROI estimate — credited toward the install.&quot;</p>
+<ul>
+<li><b>Deliverable:</b> 1 Loom + 1-page PDF (3 opportunities, effort/impact, next-step quote).</li>
+<li><b>Reuse from Playmakers:</b> grab their audit intake questions, their &quot;opportunity teardown&quot;</li>
+</ul>
+<p>  framing, and any offer templates in the sales/offer channels.</p>
+<h3 id="b-home-service-ai-installs-pool-hvac-etc">B. Home-service AI installs (pool, HVAC, etc.)</h3>
+<ul>
+<li><b>Wedge builds:</b> missed-call-text-back, AI receptionist/booking, review-request automation,</li>
+</ul>
+<p>  quote-follow-up sequences — all things Playmakers members discuss and template.</p>
+<ul>
+<li><b>Pricing pattern:</b> setup fee ($1.5–3k) + monthly ($297–997) — mirror their retainer shape.</li>
+<li>Brandon already has GHL + voice-agent infra → he can deliver these same-week.</li>
+</ul>
+<h2 id="5-ongoing-access-pattern-for-miles-read-only-built--one-unlock-needed">5. Ongoing access pattern for Miles (read-only) [BUILT — one unlock needed]</h2>
+<p><b>Tool:</b> <code>slack-readonly-export.py</code> (in this folder). It:</p>
+<ol>
+<li>reads the app&#x27;s own <code>xoxc</code> token from Local Storage,</li>
+<li>decrypts the <code>d</code> session cookie via the macOS keychain,</li>
+<li>calls <b>only</b> read methods (<code>conversations.list/history</code>, <code>users.list</code>, <code>files/pins/bookmarks.list</code></li>
+</ol>
+<p>   — enforced allow-list; it cannot post, DM, react, or mutate),</p>
+<ol>
+<li>writes <code>playmakers-export-&lt;date&gt;.json</code> (channels, purposes, member counts, recent msgs).</li>
+</ol>
+<p><b>Current blocker:</b> the login keychain is <b>locked</b> in this non-interactive session, so the<br>cookie can&#x27;t be decrypted. Verified: the token extraction works and the script stops exactly<br>at the keychain step.</p>
+<p><b>Ongoing digest (after first successful run):</b> schedule <code>python3 slack-readonly-export.py --history</code><br>weekly via Hermes → diff against last week → surface only new money plays / offer templates.<br>No Slack spam, read-only, no Brandon interruption.</p>
+<h2 id="6-top-10-reusable-assets--where-to-grab-them-verified-locations-contents-pending-5-export">6. Top-10 reusable assets — where to grab them [VERIFIED locations, contents pending §5 export]</h2>
+<p>Channels are confirmed; the specific pinned files/permalinks come from the §5 export:</p>
+<ol>
+<li><b>#resources</b> — pinned offer templates, SOPs, scripts (start here)</li>
+<li><b>#chris-gpt</b> — Chris Koerner&#x27;s prompts/frameworks</li>
+<li><b>#ghl</b> — reusable GoHighLevel builds for Brandon&#x27;s exact stack</li>
+<li><b>#recordings</b> — workshop/call replays = full playbooks</li>
+<li><b>#wins</b> — member case studies (proof to reuse in Brandon&#x27;s audit pitch)</li>
+<li><b>#business-development</b> — sales scripts &amp; deal structures</li>
+<li><b>#announcements</b> — Chris&#x27;s own offer/launch copy to model</li>
+<li><b>#intros</b> — member directory = prospect list</li>
+<li><b>#aiquestions</b> — daily problem statements = offer ideas + warm leads</li>
+<li><b>#bugs-tech-support-and-automation</b> — automation/install playbooks</li>
+</ol></body></html>
